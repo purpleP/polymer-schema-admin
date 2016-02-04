@@ -1,6 +1,8 @@
 <link rel="import" href="../../components/polymer/polymer.html"/>
 <link rel="import" href="../../components/iron-ajax/iron-ajax.html"/>
 <link rel="import" href="../../components/paper-input/paper-input.html"/>
+<link rel="import" href="../../components/paper-button/paper-button.html"/>
+
 
 <dom-module id="schema-editor">
   <link rel="import" href="schema-editor.css" type="css"> 
@@ -12,18 +14,16 @@
       on-response="parseSchema"
       method="GET"
       handle-as="json"
-      >
-    </iron-ajax>
+      ></iron-ajax>
     <template is="dom-repeat", items="{{props}}" as="property">
-      <template is="dom-if", if="{{isNumberProperty(property)}}">
-        <paper-input label="{{property.title}}" type="number" value="{{entity[property.name]}}"></paper-input>
-      </template>
-      <template is="dom-if", if="{{isStringProperty(property)}}">
-        <paper-input label="{{property.title}}" type="text"></paper-input>
-      </template>
+      <paper-input
+        label="{{property.title}}"
+        type="{{toInputType(property.type)}}"
+        value="{{entity.name_}}"
+        ></paper-input>
     </template>
-    
-    
+      <paper-button on-tap="showEntity">Show entity</paper-button>
+      
   </template>
   <script>
     Polymer({
@@ -38,11 +38,34 @@
               title: "SomeTitle",
             },
           ],
-          observer: 'onPropsChange',
+          observer: "onPropsChange",
         },
         entity: {
           type: Object,
+          notify: true,
+          value: {
+            name_: "some name",
+          },
+          observer: "onEntityChange",
         },
+      },
+
+      getAttr: function(attrName) {
+        if (this.entity != null) {
+          return this.entity[attrName];
+        }
+        else {
+          return null;
+        }
+      },
+
+      showEntity: function() {
+        console.log(this.entity);
+      },
+
+      onEntityChange: function(new_, old_) {
+        console.log(new_);
+        console.log(old_);
       },
 
       parseSchema: function(request) {
@@ -64,21 +87,20 @@
         return property.type == 'string';
       },
 
-      onPropsChange: function(new_value, old_value) {
-        var schemaTypes = {
+      onPropsChange: function(newProps, oldProps) {
+        if (oldProps != null) {
+          for (var p in newProps) {
+            this.entity[p.name] = null;
+          };
+        };
+      },
+
+      toInputType: function(schemaType) {
+        var mapping = {
           number: "number",
           string: "text"
         };
-        var inputs = new_value.map(function(prop) {
-          var inp = document.createElement('paper-input');
-          inp.type = schemaTypes[prop.type];
-          inp.value = "{{entity[prop.name]}}";
-          inp.label = prop.title;
-        });
-        for (var i in inputs) {
-          Polymer.dom(this.root).appendChild(i);
-        };
-        console.log(new_value, old_value);
+        return mapping[schemaType];
       }
     }); 
   </script>

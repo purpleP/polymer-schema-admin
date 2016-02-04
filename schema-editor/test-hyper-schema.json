@@ -6,7 +6,7 @@
       "title": "Resource Identifier",
       "type": "number"
     },
-    "name": {
+    "name_": {
       "title": "Some name",
       "type": "string"
     }

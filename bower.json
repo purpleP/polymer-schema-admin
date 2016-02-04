@@ -28,6 +28,7 @@
     "paper-toolbar": "PolymerElements/paper-toolbar#^1.1.4",
     "page": "^1.6.4",
     "iron-ajax": "PolymerElements/iron-ajax#^1.1.1",
-    "paper-input": "PolymerElements/paper-input#^1.1.5"
+    "paper-input": "PolymerElements/paper-input#^1.1.5",
+    "paper-button": "PolymerElements/paper-button#^1.0.11"
   }
 }

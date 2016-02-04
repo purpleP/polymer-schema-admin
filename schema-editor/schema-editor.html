@@ -16,7 +16,7 @@
     </iron-ajax>
     <template is="dom-repeat", items="{{props}}" as="property">
       <template is="dom-if", if="{{isNumberProperty(property)}}">
-        <paper-input label="{{property.title}}" type="number"></paper-input>
+        <paper-input label="{{property.title}}" type="number" value="{{entity[property.name]}}"></paper-input>
       </template>
       <template is="dom-if", if="{{isStringProperty(property)}}">
         <paper-input label="{{property.title}}" type="text"></paper-input>
@@ -38,6 +38,10 @@
               title: "SomeTitle",
             },
           ],
+          observer: 'onPropsChange',
+        },
+        entity: {
+          type: Object,
         },
       },
 
@@ -46,7 +50,9 @@
         var names = Object.keys(properties)
         
         this.props = names.map(function(name){
-          return properties[name];
+          var obj = properties[name];
+          obj.name = name;
+          return obj;
         });
       },
       
@@ -57,10 +63,23 @@
       isStringProperty: function(property) {
         return property.type == 'string';
       },
-      /*ready: function() {*/
-        /*this.$.req.generateRequest();*/
-        /*console.log('request have been generated');*/
-      /*},*/
+
+      onPropsChange: function(new_value, old_value) {
+        var schemaTypes = {
+          number: "number",
+          string: "text"
+        };
+        var inputs = new_value.map(function(prop) {
+          var inp = document.createElement('paper-input');
+          inp.type = schemaTypes[prop.type];
+          inp.value = "{{entity[prop.name]}}";
+          inp.label = prop.title;
+        });
+        for (var i in inputs) {
+          Polymer.dom(this.root).appendChild(i);
+        };
+        console.log(new_value, old_value);
+      }
     }); 
   </script>
   

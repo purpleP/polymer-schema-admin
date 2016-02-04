@@ -1,0 +1,69 @@
+<link rel="import" href="../../components/polymer/polymer.html"/>
+<link rel="import" href="../../components/iron-ajax/iron-ajax.html"/>
+<link rel="import" href="../../components/paper-input/paper-input.html"/>
+
+<dom-module id="schema-editor">
+  <link rel="import" href="schema-editor.css" type="css"> 
+  <template>
+    <iron-ajax
+      id="req"
+      auto
+      url="test-hyper-schema.json"
+      on-response="parseSchema"
+      method="GET"
+      handle-as="json"
+      >
+    </iron-ajax>
+    <template is="dom-repeat", items="{{props}}" as="property">
+      <template is="dom-if", if="{{isNumberProperty(property)}}">
+        <paper-input label="{{property.title}}" type="number"></paper-input>
+      </template>
+      <template is="dom-if", if="{{isStringProperty(property)}}">
+        <paper-input label="{{property.title}}" type="text"></paper-input>
+      </template>
+    </template>
+    
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'schema-editor',
+      properties: {
+        props: {
+          type: Array,
+          notify: true,
+          value: [
+            {
+              type: "number",
+              title: "SomeTitle",
+            },
+          ],
+        },
+      },
+
+      parseSchema: function(request) {
+        var properties = request.detail.response.properties;
+        var names = Object.keys(properties)
+        
+        this.props = names.map(function(name){
+          return properties[name];
+        });
+      },
+      
+      isNumberProperty: function(property) {
+        return property.type == 'number';
+      },
+      
+      isStringProperty: function(property) {
+        return property.type == 'string';
+      },
+      /*ready: function() {*/
+        /*this.$.req.generateRequest();*/
+        /*console.log('request have been generated');*/
+      /*},*/
+    }); 
+  </script>
+  
+  
+</dom-module>
+
